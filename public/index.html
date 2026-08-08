@@ -276,8 +276,19 @@ let CONFIG = { orderPhone: '', adminPhoneMasked: '' };
 const cart = {};
 let orderType = 'olib';
 let adminPhone = '';
+let kitchenTimer = null;
 
-function fmtSum(n){ return n.toLocaleString('uz-UZ').replace(/,/g,' ') + " so'm"; }
+function escapeHtml(str){
+  if(str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
+
+function fmtSum(n){ return Number(n||0).toLocaleString('uz-UZ').replace(/,/g,' ') + " so'm"; }
 
 // --- CONFIG ---
 
@@ -310,9 +321,9 @@ function renderMenu(){
     <div class="menu-item ${m.available ? '' : 'unavailable'}">
       <div class="menu-thumb">${m.image ? `<img src="${m.image}" alt="${escapeHtml(m.name)}">` : '🫓'}</div>
       <div class="menu-info">
-        <div class="menu-name">${m.name}</div>
+        <div class="menu-name">${escapeHtml(m.name)}</div>
         ${m.desc ? `<div class="menu-desc">${escapeHtml(m.desc)}</div>` : ''}
-        <span class="menu-tag">${m.tag} · ${fmtSum(m.price)}</span>
+        <span class="menu-tag">${escapeHtml(m.tag)} · ${fmtSum(m.price)}</span>
         ${!m.available ? `<div class="stock-badge">Tugagan</div>` : ''}
       </div>
       <div class="qty-row">
@@ -328,7 +339,7 @@ function renderMenu(){
 function changeQty(id, d){
   const item = MENU.find(m => m.id === id);
   if(!item || !item.available) return;
-  cart[id] = Math.max(0, cart[id] + d);
+  cart[id] = Math.max(0, (cart[id]||0) + d);
   document.getElementById('qty-' + id).textContent = cart[id];
   updateCartTotal();
 }
@@ -355,11 +366,16 @@ function showTab(t){
   document.getElementById('tab-order-btn').classList.toggle('active', t==='order');
   document.getElementById('tab-kitchen-btn').classList.toggle('active', t==='kitchen');
   document.getElementById('tab-admin-btn').classList.toggle('active', t==='admin');
-  if(t==='kitchen'){ loadOrders(); }
+
+  if(kitchenTimer){ clearInterval(kitchenTimer); kitchenTimer = null; }
+  if(t==='kitchen'){
+    loadOrders();
+    kitchenTimer = setInterval(loadOrders, 15000);
+  }
 }
 
-function showToast(msg, kind){
-  const t = document.getElementById('toast');
+function showToast(msg, kind, elId){
+  const t = document.getElementById(elId || 'toast');
   t.textContent = msg;
   t.className = 'toast ' + kind;
   t.style.display = 'block';
@@ -418,12 +434,13 @@ function fmtTime(ts){
 }
 function statusLabel(s){ return s==='yangi' ? 'Yangi' : s==='tayyor' ? 'Tayyor' : 'Yetkazildi'; }
 function nextStatus(s){ return s==='yangi' ? 'tayyor' : 'yetkazildi'; }
+function nextStatusLabel(s){ return s==='yangi' ? 'Tayyor deb belgilash' : 'Yetkazildi deb belgilash'; }
 
 async function loadOrders(){
   const container = document.getElementById('rail-content');
   try{
     const res = await fetch('/api/orders');
-    if(!res.ok) throw new Error('Serverdan javob yo\'q');
+    if(!res.ok) throw new Error("Serverdan javob yo'q");
     const orders = await res.json();
 
     if(!orders || orders.length === 0){
@@ -433,17 +450,6 @@ async function loadOrders(){
 
     container.innerHTML = orders.map((o, i)=>{
       const num = orders.length - i;
-      const metaLine = o.type==='yetkaz' ? `Yetkazib berish · ${o.addr || '—'}` : `Olib ketish`;
+      const metaLine = o.type==='yetkaz' ? `Yetkazib berish · ${escapeHtml(o.addr || '—')}` : `Olib ketish`;
       const itemsList = (o.items || []).map(it =>
-        `<li><span>${escapeHtml(it.name)} × ${it.qty}</span><span>${fmtSum(it.qty*it.price)}</span></li>`
-      ).join('');
-      return `
-        <div class="ticket">
-          <div class="ticket-top">
-            <span class="ticket-num">№${String(num).padStart(3,'0')}</span>
-            <span class="ticket-time">${fmtTime(o.createdAt)}</span>
-          </div>
-          <div class="ticket-name">${escapeHtml(o.name)}</div>
-          <ul class="ticket-items">${itemsList}</ul>
-          <div class="ticket-meta">Jami: <b style="color:var(--crust-2)">${fmtSum(o.total||0)}</b></div>
-          <div class="ticket-meta">${e
+        `<li><span>${escapeHtml(it.name)} × ${it.qty}</span><sp
