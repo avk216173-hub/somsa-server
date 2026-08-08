@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kishmish Somsa — Buyurtmalar</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<meta name="theme-color" content="#D4A034">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -30,7 +34,7 @@
     color:var(--dough);
     font-family:'Inter',sans-serif;
     min-height:100vh;
-    padding-bottom:60px;
+    padding-bottom:70px;
   }
   h1,h2,h3,.display{font-family:'Zilla Slab',serif;}
 
@@ -39,8 +43,21 @@
   header h1{margin:0;font-size:28px;font-weight:700;letter-spacing:0.3px;color:var(--crust-2);}
   header p{margin:6px 0 0;color:var(--dough-dim);font-size:13.5px;}
 
-  .tabs{display:flex;max-width:480px;margin:18px auto 0;padding:0 16px;gap:8px;}
-  .tab-btn{flex:1;padding:11px 10px;background:var(--clay);border:1px solid rgba(212,160,52,0.22);color:var(--dough-dim);border-radius:10px;font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;cursor:pointer;transition:all .2s;}
+  #install-banner{
+    display:none;
+    max-width:480px;margin:14px auto 0;padding:0 16px;
+  }
+  #install-banner .inner{
+    background:var(--raisin);border:1px solid var(--raisin-2);border-radius:12px;
+    padding:12px 14px;display:flex;align-items:center;gap:10px;font-size:13px;
+  }
+  #install-banner button{
+    margin-left:auto;background:var(--crust);color:#2A1B0E;border:none;border-radius:8px;
+    padding:8px 12px;font-weight:700;font-size:12.5px;cursor:pointer;flex-shrink:0;
+  }
+
+  .tabs{display:flex;max-width:480px;margin:18px auto 0;padding:0 16px;gap:6px;}
+  .tab-btn{flex:1;padding:11px 6px;background:var(--clay);border:1px solid rgba(212,160,52,0.22);color:var(--dough-dim);border-radius:10px;font-family:'Inter',sans-serif;font-weight:600;font-size:12.5px;cursor:pointer;transition:all .2s;}
   .tab-btn.active{background:var(--crust);color:#2A1B0E;border-color:var(--crust);}
 
   main{max-width:480px;margin:0 auto;padding:20px 16px 0;}
@@ -48,13 +65,27 @@
   .card{background:var(--clay);border:1px solid rgba(212,160,52,0.16);border-radius:16px;padding:20px;margin-bottom:16px;}
   .card h3{margin:0 0 14px;font-size:14px;color:var(--crust-2);text-transform:uppercase;letter-spacing:0.5px;}
 
-  .menu-item{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(242,230,206,0.08);}
+  .menu-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(242,230,206,0.08);}
   .menu-item:last-child{border-bottom:none;}
-  .menu-info{flex:1;}
+  .menu-item.unavailable{opacity:0.45;}
+  .menu-thumb{
+    width:52px;height:52px;border-radius:12px;flex-shrink:0;
+    background:linear-gradient(135deg, var(--raisin), var(--char));
+    display:flex;align-items:center;justify-content:center;font-size:24px;
+    overflow:hidden;border:1px solid rgba(212,160,52,0.25);
+  }
+  .menu-thumb img{width:100%;height:100%;object-fit:cover;}
+  .menu-info{flex:1;min-width:0;}
   .menu-name{font-size:15px;font-weight:600;}
+  .menu-desc{font-size:11.5px;color:var(--crust-2);font-style:italic;margin-top:1px;}
   .menu-tag{display:inline-block;font-size:10.5px;color:var(--dough-dim);margin-top:2px;}
+  .stock-badge{
+    font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;
+    color:var(--err);margin-top:3px;
+  }
   .qty-row{display:flex;align-items:center;gap:10px;flex-shrink:0;}
   .qty-btn{width:32px;height:32px;border-radius:8px;background:var(--char);border:1px solid rgba(242,230,206,0.14);color:var(--crust-2);font-size:17px;line-height:1;cursor:pointer;}
+  .qty-btn:disabled{opacity:0.3;}
   .qty-btn:active{transform:scale(0.94);}
   .qty-val{font-size:16px;font-weight:700;min-width:20px;text-align:center;}
   .cart-summary{margin-top:14px;padding-top:12px;border-top:1px dashed rgba(212,160,52,0.3);font-size:13.5px;color:var(--dough-dim);display:flex;justify-content:space-between;}
@@ -62,7 +93,7 @@
 
   .field{margin-bottom:14px;}
   label{display:block;font-size:12.5px;color:var(--dough-dim);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;}
-  input[type=text], input[type=tel], textarea{width:100%;padding:11px 12px;background:var(--char);border:1px solid rgba(242,230,206,0.14);border-radius:9px;color:var(--dough);font-family:'Inter',sans-serif;font-size:14.5px;outline:none;}
+  input[type=text], input[type=tel], input[type=number], input[type=url], textarea{width:100%;padding:11px 12px;background:var(--char);border:1px solid rgba(242,230,206,0.14);border-radius:9px;color:var(--dough);font-family:'Inter',sans-serif;font-size:14.5px;outline:none;}
   input:focus, textarea:focus{border-color:var(--crust);}
   textarea{resize:vertical;min-height:60px;}
   .type-row{display:flex;gap:8px;}
@@ -75,6 +106,16 @@
   .toast{margin-top:12px;padding:11px 14px;border-radius:9px;font-size:13.5px;text-align:center;display:none;}
   .toast.ok{background:rgba(127,166,92,0.15);border:1px solid rgba(127,166,92,0.4);color:var(--ok);}
   .toast.err{background:rgba(201,86,74,0.15);border:1px solid rgba(201,86,74,0.4);color:var(--err);}
+
+  .contact-row{
+    display:flex;gap:10px;
+  }
+  .contact-btn{
+    flex:1;text-align:center;padding:12px 8px;background:var(--char);
+    border:1px solid rgba(212,160,52,0.25);border-radius:10px;color:var(--dough);
+    text-decoration:none;font-size:13px;font-weight:600;
+  }
+  .contact-btn span{display:block;color:var(--crust-2);font-size:11px;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:3px;}
 
   .rail-wrap{position:relative;padding-top:26px;}
   .rail-line{position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg, transparent, var(--crust) 8%, var(--crust) 92%, transparent);border-radius:2px;}
@@ -97,6 +138,38 @@
   .status-btn{margin-left:auto;padding:7px 12px;background:var(--char);border:1px solid rgba(242,230,206,0.16);border-radius:8px;color:var(--dough);font-size:12px;font-weight:600;cursor:pointer;}
   .empty{text-align:center;color:var(--dough-dim);padding:40px 20px;font-size:14px;}
   .loading{text-align:center;color:var(--dough-dim);padding:20px;font-size:13px;}
+
+  /* ADMIN */
+  .admin-lock{text-align:center;padding:20px 4px;}
+  .admin-lock p{color:var(--dough-dim);font-size:13.5px;margin-bottom:16px;}
+  .admin-item{padding:14px 0;border-bottom:1px solid rgba(242,230,206,0.08);}
+  .admin-item:last-child{border-bottom:none;}
+  .admin-item-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .admin-item-name{font-weight:600;font-size:14.5px;}
+  .switch{
+    position:relative;width:46px;height:26px;flex-shrink:0;
+  }
+  .switch input{opacity:0;width:0;height:0;}
+  .switch-track{
+    position:absolute;inset:0;background:var(--char);border:1px solid rgba(242,230,206,0.2);
+    border-radius:20px;cursor:pointer;transition:.2s;
+  }
+  .switch-track::before{
+    content:"";position:absolute;width:18px;height:18px;left:3px;top:3px;
+    background:var(--dough-dim);border-radius:50%;transition:.2s;
+  }
+  .switch input:checked + .switch-track{background:var(--ok);border-color:var(--ok);}
+  .switch input:checked + .switch-track::before{transform:translateX(20px);background:#fff;}
+  .admin-sub-row{display:flex;gap:8px;margin-top:6px;}
+  .admin-sub-row input{font-size:12.5px;padding:8px 10px;}
+  .admin-save-btn{
+    background:var(--crust);color:#2A1B0E;border:none;border-radius:8px;
+    padding:8px 12px;font-weight:700;font-size:12px;cursor:pointer;flex-shrink:0;
+  }
+  .admin-out{
+    display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;
+    color:var(--err);margin-top:2px;
+  }
 </style>
 </head>
 <body>
@@ -107,16 +180,25 @@
   <p>Tandirdan issiqqina — buyurtma bering</p>
 </header>
 
+<div id="install-banner">
+  <div class="inner">
+    <span>📲 Ilovani telefoningizga o'rnating</span>
+    <button id="install-btn">O'rnatish</button>
+  </div>
+</div>
+
 <div class="tabs">
-  <button class="tab-btn active" id="tab-order-btn" onclick="showTab('order')">Buyurtma berish</button>
+  <button class="tab-btn active" id="tab-order-btn" onclick="showTab('order')">Buyurtma</button>
   <button class="tab-btn" id="tab-kitchen-btn" onclick="showTab('kitchen')">Buyurtmalar</button>
+  <button class="tab-btn" id="tab-admin-btn" onclick="showTab('admin')">Admin</button>
 </div>
 
 <main>
+  <!-- ORDER TAB -->
   <div id="tab-order">
     <div class="card">
       <h3>Menyu</h3>
-      <div id="menu-list"></div>
+      <div id="menu-list"><div class="loading">Yuklanmoqda...</div></div>
       <div class="cart-summary"><span>Jami:</span><span><b id="cart-total">0</b> dona</span></div>
       <div class="cart-summary"><span>Umumiy summa:</span><span><b id="cart-sum">0 so'm</b></span></div>
     </div>
@@ -148,46 +230,95 @@
       <button class="submit-btn" id="submit-btn" onclick="submitOrder()">Buyurtma berish</button>
       <div class="toast" id="toast"></div>
     </div>
+
+    <div class="card">
+      <h3>Bog'lanish</h3>
+      <div class="contact-row">
+        <a class="contact-btn" id="order-phone-link" href="tel:">
+          <span>Buyurtma uchun</span>
+          <span id="order-phone-text">—</span>
+        </a>
+      </div>
+    </div>
   </div>
 
+  <!-- KITCHEN TAB -->
   <div id="tab-kitchen" style="display:none;">
     <div class="rail-wrap">
       <div class="rail-line"></div>
       <div id="rail-content"><div class="loading">Yuklanmoqda...</div></div>
     </div>
   </div>
+
+  <!-- ADMIN TAB -->
+  <div id="tab-admin" style="display:none;">
+    <div class="card" id="admin-lock-card">
+      <div class="admin-lock">
+        <p>Menyuni boshqarish uchun admin telefon raqamini kiriting</p>
+        <div class="field">
+          <input type="tel" id="admin-phone-input" placeholder="+998 XX XXX XX XX">
+        </div>
+        <button class="submit-btn" onclick="adminLogin()">Kirish</button>
+        <div class="toast" id="admin-toast"></div>
+      </div>
+    </div>
+
+    <div class="card" id="admin-panel-card" style="display:none;">
+      <h3>Mahsulotlarni boshqarish</h3>
+      <div id="admin-list"></div>
+    </div>
+  </div>
 </main>
 
 <script>
-const MENU = [
-  { id:'qoy',      name:"Qo'y go'shtli somsa",  tag:"An'anaviy",      price:15000 },
-  { id:'mol',      name:"Mol go'shtli somsa",   tag:"Mazali",         price:12000 },
-  { id:'qiyma',    name:"Qiymali somsa",        tag:"Aralash go'sht", price:6000  },
-  { id:'tovuq',    name:"Tovuqli somsa",        tag:"Yengil",         price:6000  },
-  { id:'kartoshka',name:"Kartoshkali somsa",    tag:"Vegetarian",     price:6000  },
-  { id:'ashqovoq', name:"Ashqovoqli somsa",     tag:"Vegetarian",     price:6000  },
-  { id:'kishmish', name:"Kishmishli somsa",     tag:"Shirin",         price:6000  },
-  { id:'kampot',   name:"Kampot",               tag:"Ichimlik",       price:12000 },
-];
-
+let MENU = [];
+let CONFIG = { orderPhone: '', adminPhoneMasked: '' };
 const cart = {};
-MENU.forEach(m => cart[m.id] = 0);
 let orderType = 'olib';
+let adminPhone = '';
 
 function fmtSum(n){ return n.toLocaleString('uz-UZ').replace(/,/g,' ') + " so'm"; }
+
+// --- CONFIG ---
+
+async function loadConfig(){
+  try{
+    const res = await fetch('/api/config');
+    CONFIG = await res.json();
+    document.getElementById('order-phone-text').textContent = CONFIG.orderPhone;
+    document.getElementById('order-phone-link').href = 'tel:' + CONFIG.orderPhone;
+  }catch(e){ console.error(e); }
+}
+
+// --- MENU (order tab) ---
+
+async function loadMenu(){
+  try{
+    const res = await fetch('/api/menu');
+    MENU = await res.json();
+    MENU.forEach(m => { if(!(m.id in cart)) cart[m.id] = 0; });
+    renderMenu();
+  }catch(e){
+    console.error(e);
+    document.getElementById('menu-list').innerHTML = '<div class="empty">Menyuni yuklab bo\'lmadi.</div>';
+  }
+}
 
 function renderMenu(){
   const el = document.getElementById('menu-list');
   el.innerHTML = MENU.map(m => `
-    <div class="menu-item">
+    <div class="menu-item ${m.available ? '' : 'unavailable'}">
+      <div class="menu-thumb">${m.image ? `<img src="${m.image}" alt="${escapeHtml(m.name)}">` : '🫓'}</div>
       <div class="menu-info">
         <div class="menu-name">${m.name}</div>
+        ${m.desc ? `<div class="menu-desc">${escapeHtml(m.desc)}</div>` : ''}
         <span class="menu-tag">${m.tag} · ${fmtSum(m.price)}</span>
+        ${!m.available ? `<div class="stock-badge">Tugagan</div>` : ''}
       </div>
       <div class="qty-row">
-        <button class="qty-btn" onclick="changeQty('${m.id}', -1)">−</button>
+        <button class="qty-btn" ${!m.available?'disabled':''} onclick="changeQty('${m.id}', -1)">−</button>
         <span class="qty-val" id="qty-${m.id}">${cart[m.id]}</span>
-        <button class="qty-btn" onclick="changeQty('${m.id}', 1)">+</button>
+        <button class="qty-btn" ${!m.available?'disabled':''} onclick="changeQty('${m.id}', 1)">+</button>
       </div>
     </div>
   `).join('');
@@ -195,6 +326,8 @@ function renderMenu(){
 }
 
 function changeQty(id, d){
+  const item = MENU.find(m => m.id === id);
+  if(!item || !item.available) return;
   cart[id] = Math.max(0, cart[id] + d);
   document.getElementById('qty-' + id).textContent = cart[id];
   updateCartTotal();
@@ -202,7 +335,7 @@ function changeQty(id, d){
 
 function updateCartTotal(){
   const total = Object.values(cart).reduce((a,b)=>a+b, 0);
-  const sum = MENU.reduce((s,m)=> s + (cart[m.id] * m.price), 0);
+  const sum = MENU.reduce((s,m)=> s + ((cart[m.id]||0) * m.price), 0);
   document.getElementById('cart-total').textContent = total;
   document.getElementById('cart-sum').textContent = fmtSum(sum);
   document.getElementById('submit-btn').disabled = total === 0;
@@ -218,8 +351,10 @@ function setType(t){
 function showTab(t){
   document.getElementById('tab-order').style.display = t==='order' ? 'block':'none';
   document.getElementById('tab-kitchen').style.display = t==='kitchen' ? 'block':'none';
+  document.getElementById('tab-admin').style.display = t==='admin' ? 'block':'none';
   document.getElementById('tab-order-btn').classList.toggle('active', t==='order');
   document.getElementById('tab-kitchen-btn').classList.toggle('active', t==='kitchen');
+  document.getElementById('tab-admin-btn').classList.toggle('active', t==='admin');
   if(t==='kitchen'){ loadOrders(); }
 }
 
@@ -237,14 +372,13 @@ async function submitOrder(){
   const addr = document.getElementById('f-addr').value.trim();
   const note = document.getElementById('f-note').value.trim();
 
-  const items = MENU.filter(m => cart[m.id] > 0).map(m => ({ name:m.name, qty:cart[m.id], price:m.price }));
-  const total = items.reduce((s,it)=> s + it.qty*it.price, 0);
+  const items = MENU.filter(m => cart[m.id] > 0).map(m => ({ id:m.id, name:m.name, qty:cart[m.id] }));
 
   if(items.length === 0){ alert("Iltimos, kamida bitta somsa turini tanlang."); return; }
   if(!name || !phone){ alert('Iltimos, ism va telefon raqamingizni kiriting.'); return; }
   if(orderType==='yetkaz' && !addr){ alert('Yetkazib berish uchun manzilni kiriting.'); return; }
 
-  const payload = { name, phone, items, total, type: orderType, addr: orderType==='yetkaz' ? addr : '', note };
+  const payload = { name, phone, items, type: orderType, addr: orderType==='yetkaz' ? addr : '', note };
 
   const btn = document.getElementById('submit-btn');
   btn.disabled = true;
@@ -270,12 +404,14 @@ async function submitOrder(){
     setType('olib');
   }catch(e){
     console.error(e);
-    showToast('Xatolik: ' + e.message + '. Internetni tekshirib qayta urinib ko\'ring.', 'err');
+    showToast('Xatolik: ' + e.message, 'err');
   }finally{
     btn.textContent = 'Buyurtma berish';
     updateCartTotal();
   }
 }
+
+// --- KITCHEN ---
 
 function fmtTime(ts){
   return new Date(ts).toLocaleString('uz-UZ', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
@@ -310,48 +446,4 @@ async function loadOrders(){
           <div class="ticket-name">${escapeHtml(o.name)}</div>
           <ul class="ticket-items">${itemsList}</ul>
           <div class="ticket-meta">Jami: <b style="color:var(--crust-2)">${fmtSum(o.total||0)}</b></div>
-          <div class="ticket-meta">${escapeHtml(o.phone)} · ${metaLine}</div>
-          ${o.note ? `<div class="ticket-note">"${escapeHtml(o.note)}"</div>` : ''}
-          <div class="status-row">
-            <span class="status-badge status-${o.status}">${statusLabel(o.status)}</span>
-            ${o.status !== 'yetkazildi' ? `<button class="status-btn" onclick="advanceStatus('${o.id}','${o.status}')">${o.status==='yangi' ? 'Tayyor deb belgilash' : 'Yetkazildi deb belgilash'}</button>` : ''}
-          </div>
-        </div>
-      `;
-    }).join('');
-  }catch(e){
-    console.error(e);
-    container.innerHTML = '<div class="empty">Buyurtmalarni yuklab bo\'lmadi. Server ishlayotganini tekshiring.</div>';
-  }
-}
-
-async function advanceStatus(id, currentStatus){
-  try{
-    const res = await fetch('/api/orders/' + id, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: nextStatus(currentStatus) })
-    });
-    if(!res.ok) throw new Error('Yangilab bo\'lmadi');
-    loadOrders();
-  }catch(e){
-    console.error(e);
-    alert('Holatni yangilashda xatolik.');
-  }
-}
-
-function escapeHtml(s){
-  const d = document.createElement('div');
-  d.textContent = s;
-  return d.innerHTML;
-}
-
-renderMenu();
-setInterval(()=>{
-  if(document.getElementById('tab-kitchen').style.display !== 'none'){ loadOrders(); }
-}, 6000);
-</script>
-
-</body>
-  </html>
-
+          <div class="ticket-meta">${e
