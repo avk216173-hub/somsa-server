@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kishmish Somsa — Buyurtmalar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --char: #241712;
+    --clay: #3B291C;
+    --clay-2: #4A3524;
+    --crust: #D4A034;
+    --crust-2: #E8BE5C;
+    --raisin: #7A2E42;
+    --raisin-2: #9C4159;
+    --dough: #F2E6CE;
+    --dough-dim: #C9B994;
+    --ok: #7FA65C;
+    --err: #C9564A;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse at 20% -10%, #4a2f1c 0%, transparent 55%),
+      radial-gradient(ellipse at 100% 0%, #3a2116 0%, transparent 50%),
+      var(--char);
+    color:var(--dough);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+  h1,h2,h3,.display{font-family:'Zilla Slab',serif;}
+
+  header{padding:28px 20px 18px;text-align:center;border-bottom:1px solid rgba(212,160,52,0.18);}
+  .oven-icon{font-size:34px;display:block;margin-bottom:6px;filter:drop-shadow(0 2px 6px rgba(212,160,52,0.35));}
+  header h1{margin:0;font-size:28px;font-weight:700;letter-spacing:0.3px;color:var(--crust-2);}
+  header p{margin:6px 0 0;color:var(--dough-dim);font-size:13.5px;}
+
+  .tabs{display:flex;max-width:480px;margin:18px auto 0;padding:0 16px;gap:8px;}
+  .tab-btn{flex:1;padding:11px 10px;background:var(--clay);border:1px solid rgba(212,160,52,0.22);color:var(--dough-dim);border-radius:10px;font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;cursor:pointer;transition:all .2s;}
+  .tab-btn.active{background:var(--crust);color:#2A1B0E;border-color:var(--crust);}
+
+  main{max-width:480px;margin:0 auto;padding:20px 16px 0;}
+
+  .card{background:var(--clay);border:1px solid rgba(212,160,52,0.16);border-radius:16px;padding:20px;margin-bottom:16px;}
+  .card h3{margin:0 0 14px;font-size:14px;color:var(--crust-2);text-transform:uppercase;letter-spacing:0.5px;}
+
+  .menu-item{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(242,230,206,0.08);}
+  .menu-item:last-child{border-bottom:none;}
+  .menu-info{flex:1;}
+  .menu-name{font-size:15px;font-weight:600;}
+  .menu-tag{display:inline-block;font-size:10.5px;color:var(--dough-dim);margin-top:2px;}
+  .qty-row{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+  .qty-btn{width:32px;height:32px;border-radius:8px;background:var(--char);border:1px solid rgba(242,230,206,0.14);color:var(--crust-2);font-size:17px;line-height:1;cursor:pointer;}
+  .qty-btn:active{transform:scale(0.94);}
+  .qty-val{font-size:16px;font-weight:700;min-width:20px;text-align:center;}
+  .cart-summary{margin-top:14px;padding-top:12px;border-top:1px dashed rgba(212,160,52,0.3);font-size:13.5px;color:var(--dough-dim);display:flex;justify-content:space-between;}
+  .cart-summary b{color:var(--crust-2);}
+
+  .field{margin-bottom:14px;}
+  label{display:block;font-size:12.5px;color:var(--dough-dim);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;}
+  input[type=text], input[type=tel], textarea{width:100%;padding:11px 12px;background:var(--char);border:1px solid rgba(242,230,206,0.14);border-radius:9px;color:var(--dough);font-family:'Inter',sans-serif;font-size:14.5px;outline:none;}
+  input:focus, textarea:focus{border-color:var(--crust);}
+  textarea{resize:vertical;min-height:60px;}
+  .type-row{display:flex;gap:8px;}
+  .type-opt{flex:1;padding:10px;text-align:center;border-radius:9px;border:1px solid rgba(242,230,206,0.14);background:var(--char);color:var(--dough-dim);font-size:13.5px;font-weight:600;cursor:pointer;}
+  .type-opt.active{background:var(--raisin);border-color:var(--raisin-2);color:var(--dough);}
+  #addr-field{display:none;}
+  .submit-btn{width:100%;padding:14px;margin-top:6px;background:var(--crust);color:#2A1B0E;border:none;border-radius:10px;font-family:'Zilla Slab',serif;font-weight:700;font-size:16px;cursor:pointer;}
+  .submit-btn:active{transform:scale(0.98);}
+  .submit-btn:disabled{opacity:0.5;}
+  .toast{margin-top:12px;padding:11px 14px;border-radius:9px;font-size:13.5px;text-align:center;display:none;}
+  .toast.ok{background:rgba(127,166,92,0.15);border:1px solid rgba(127,166,92,0.4);color:var(--ok);}
+  .toast.err{background:rgba(201,86,74,0.15);border:1px solid rgba(201,86,74,0.4);color:var(--err);}
+
+  .rail-wrap{position:relative;padding-top:26px;}
+  .rail-line{position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg, transparent, var(--crust) 8%, var(--crust) 92%, transparent);border-radius:2px;}
+  .ticket{position:relative;background:var(--clay-2);border:1px solid rgba(212,160,52,0.2);border-radius:0 0 10px 10px;padding:14px 14px 12px;margin-bottom:22px;margin-top:4px;}
+  .ticket::before{content:"";position:absolute;top:-11px;left:16px;width:10px;height:10px;background:var(--crust);border-radius:50%;box-shadow:0 -7px 0 -3px var(--dough-dim);}
+  .ticket-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+  .ticket-num{font-family:'Zilla Slab',serif;font-weight:700;font-size:15px;color:var(--crust-2);}
+  .ticket-time{font-size:11.5px;color:var(--dough-dim);}
+  .ticket-name{font-size:16px;font-weight:600;margin-bottom:6px;}
+  .ticket-items{list-style:none;margin:0 0 8px;padding:0;font-size:13.5px;}
+  .ticket-items li{display:flex;justify-content:space-between;padding:2px 0;color:var(--dough);}
+  .ticket-items li span:last-child{color:var(--crust-2);font-weight:600;}
+  .ticket-meta{font-size:13px;color:var(--dough-dim);margin-bottom:6px;line-height:1.5;}
+  .ticket-note{font-size:12.5px;color:var(--dough-dim);font-style:italic;margin-bottom:10px;}
+  .status-row{display:flex;gap:8px;align-items:center;}
+  .status-badge{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;padding:4px 9px;border-radius:20px;}
+  .status-yangi{background:rgba(212,160,52,0.2);color:var(--crust-2);}
+  .status-tayyor{background:rgba(122,46,66,0.3);color:var(--raisin-2);}
+  .status-yetkazildi{background:rgba(127,166,92,0.2);color:var(--ok);}
+  .status-btn{margin-left:auto;padding:7px 12px;background:var(--char);border:1px solid rgba(242,230,206,0.16);border-radius:8px;color:var(--dough);font-size:12px;font-weight:600;cursor:pointer;}
+  .empty{text-align:center;color:var(--dough-dim);padding:40px 20px;font-size:14px;}
+  .loading{text-align:center;color:var(--dough-dim);padding:20px;font-size:13px;}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="oven-icon">🫓</span>
+  <h1>Kishmish Somsa</h1>
+  <p>Tandirdan issiqqina — buyurtma bering</p>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" id="tab-order-btn" onclick="showTab('order')">Buyurtma berish</button>
+  <button class="tab-btn" id="tab-kitchen-btn" onclick="showTab('kitchen')">Buyurtmalar</button>
+</div>
+
+<main>
+  <div id="tab-order">
+    <div class="card">
+      <h3>Menyu</h3>
+      <div id="menu-list"></div>
+      <div class="cart-summary"><span>Jami:</span><span><b id="cart-total">0</b> dona</span></div>
+      <div class="cart-summary"><span>Umumiy summa:</span><span><b id="cart-sum">0 so'm</b></span></div>
+    </div>
+
+    <div class="card">
+      <div class="field">
+        <label>Ismingiz</label>
+        <input type="text" id="f-name" placeholder="Ism">
+      </div>
+      <div class="field">
+        <label>Telefon raqam</label>
+        <input type="tel" id="f-phone" placeholder="+998 90 123 45 67">
+      </div>
+      <div class="field">
+        <label>Qabul qilish turi</label>
+        <div class="type-row">
+          <div class="type-opt active" id="type-olib" onclick="setType('olib')">Olib ketish</div>
+          <div class="type-opt" id="type-yetkaz" onclick="setType('yetkaz')">Yetkazib berish</div>
+        </div>
+      </div>
+      <div class="field" id="addr-field">
+        <label>Manzil</label>
+        <input type="text" id="f-addr" placeholder="Ko'cha, uy raqami">
+      </div>
+      <div class="field">
+        <label>Izoh (ixtiyoriy)</label>
+        <textarea id="f-note" placeholder="Masalan: ko'proq kishmishli qilinsin"></textarea>
+      </div>
+      <button class="submit-btn" id="submit-btn" onclick="submitOrder()">Buyurtma berish</button>
+      <div class="toast" id="toast"></div>
+    </div>
+  </div>
+
+  <div id="tab-kitchen" style="display:none;">
+    <div class="rail-wrap">
+      <div class="rail-line"></div>
+      <div id="rail-content"><div class="loading">Yuklanmoqda...</div></div>
+    </div>
+  </div>
+</main>
+
+<script>
+const MENU = [
+  { id:'qoy',      name:"Qo'y go'shtli somsa",  tag:"An'anaviy",      price:15000 },
+  { id:'mol',      name:"Mol go'shtli somsa",   tag:"Mazali",         price:12000 },
+  { id:'qiyma',    name:"Qiymali somsa",        tag:"Aralash go'sht", price:6000  },
+  { id:'tovuq',    name:"Tovuqli somsa",        tag:"Yengil",         price:6000  },
+  { id:'kartoshka',name:"Kartoshkali somsa",    tag:"Vegetarian",     price:6000  },
+  { id:'ashqovoq', name:"Ashqovoqli somsa",     tag:"Vegetarian",     price:6000  },
+  { id:'kishmish', name:"Kishmishli somsa",     tag:"Shirin",         price:6000  },
+  { id:'kampot',   name:"Kampot",               tag:"Ichimlik",       price:12000 },
+];
+
+const cart = {};
+MENU.forEach(m => cart[m.id] = 0);
+let orderType = 'olib';
+
+function fmtSum(n){ return n.toLocaleString('uz-UZ').replace(/,/g,' ') + " so'm"; }
+
+function renderMenu(){
+  const el = document.getElementById('menu-list');
+  el.innerHTML = MENU.map(m => `
+    <div class="menu-item">
+      <div class="menu-info">
+        <div class="menu-name">${m.name}</div>
+        <span class="menu-tag">${m.tag} · ${fmtSum(m.price)}</span>
+      </div>
+      <div class="qty-row">
+        <button class="qty-btn" onclick="changeQty('${m.id}', -1)">−</button>
+        <span class="qty-val" id="qty-${m.id}">${cart[m.id]}</span>
+        <button class="qty-btn" onclick="changeQty('${m.id}', 1)">+</button>
+      </div>
+    </div>
+  `).join('');
+  updateCartTotal();
+}
+
+function changeQty(id, d){
+  cart[id] = Math.max(0, cart[id] + d);
+  document.getElementById('qty-' + id).textContent = cart[id];
+  updateCartTotal();
+}
+
+function updateCartTotal(){
+  const total = Object.values(cart).reduce((a,b)=>a+b, 0);
+  const sum = MENU.reduce((s,m)=> s + (cart[m.id] * m.price), 0);
+  document.getElementById('cart-total').textContent = total;
+  document.getElementById('cart-sum').textContent = fmtSum(sum);
+  document.getElementById('submit-btn').disabled = total === 0;
+}
+
+function setType(t){
+  orderType = t;
+  document.getElementById('type-olib').classList.toggle('active', t==='olib');
+  document.getElementById('type-yetkaz').classList.toggle('active', t==='yetkaz');
+  document.getElementById('addr-field').style.display = t==='yetkaz' ? 'block' : 'none';
+}
+
+function showTab(t){
+  document.getElementById('tab-order').style.display = t==='order' ? 'block':'none';
+  document.getElementById('tab-kitchen').style.display = t==='kitchen' ? 'block':'none';
+  document.getElementById('tab-order-btn').classList.toggle('active', t==='order');
+  document.getElementById('tab-kitchen-btn').classList.toggle('active', t==='kitchen');
+  if(t==='kitchen'){ loadOrders(); }
+}
+
+function showToast(msg, kind){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + kind;
+  t.style.display = 'block';
+  setTimeout(()=>{ t.style.display='none'; }, 3500);
+}
+
+async function submitOrder(){
+  const name = document.getElementById('f-name').value.trim();
+  const phone = document.getElementById('f-phone').value.trim();
+  const addr = document.getElementById('f-addr').value.trim();
+  const note = document.getElementById('f-note').value.trim();
+
+  const items = MENU.filter(m => cart[m.id] > 0).map(m => ({ name:m.name, qty:cart[m.id], price:m.price }));
+  const total = items.reduce((s,it)=> s + it.qty*it.price, 0);
+
+  if(items.length === 0){ alert("Iltimos, kamida bitta somsa turini tanlang."); return; }
+  if(!name || !phone){ alert('Iltimos, ism va telefon raqamingizni kiriting.'); return; }
+  if(orderType==='yetkaz' && !addr){ alert('Yetkazib berish uchun manzilni kiriting.'); return; }
+
+  const payload = { name, phone, items, total, type: orderType, addr: orderType==='yetkaz' ? addr : '', note };
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Yuborilmoqda...';
+
+  try{
+    const res = await fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if(!res.ok){
+      const err = await res.json().catch(()=>({}));
+      throw new Error(err.error || 'Server xatoligi');
+    }
+    showToast('Buyurtmangiz qabul qilindi ✓', 'ok');
+    document.getElementById('f-name').value='';
+    document.getElementById('f-phone').value='';
+    document.getElementById('f-addr').value='';
+    document.getElementById('f-note').value='';
+    MENU.forEach(m => cart[m.id] = 0);
+    renderMenu();
+    setType('olib');
+  }catch(e){
+    console.error(e);
+    showToast('Xatolik: ' + e.message + '. Internetni tekshirib qayta urinib ko\'ring.', 'err');
+  }finally{
+    btn.textContent = 'Buyurtma berish';
+    updateCartTotal();
+  }
+}
+
+function fmtTime(ts){
+  return new Date(ts).toLocaleString('uz-UZ', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
+}
+function statusLabel(s){ return s==='yangi' ? 'Yangi' : s==='tayyor' ? 'Tayyor' : 'Yetkazildi'; }
+function nextStatus(s){ return s==='yangi' ? 'tayyor' : 'yetkazildi'; }
+
+async function loadOrders(){
+  const container = document.getElementById('rail-content');
+  try{
+    const res = await fetch('/api/orders');
+    if(!res.ok) throw new Error('Serverdan javob yo\'q');
+    const orders = await res.json();
+
+    if(!orders || orders.length === 0){
+      container.innerHTML = '<div class="empty">Hozircha buyurtmalar yo\'q.<br>Birinchi somsa buyurtmasini kuting 🫓</div>';
+      return;
+    }
+
+    container.innerHTML = orders.map((o, i)=>{
+      const num = orders.length - i;
+      const metaLine = o.type==='yetkaz' ? `Yetkazib berish · ${o.addr || '—'}` : `Olib ketish`;
+      const itemsList = (o.items || []).map(it =>
+        `<li><span>${escapeHtml(it.name)} × ${it.qty}</span><span>${fmtSum(it.qty*it.price)}</span></li>`
+      ).join('');
+      return `
+        <div class="ticket">
+          <div class="ticket-top">
+            <span class="ticket-num">№${String(num).padStart(3,'0')}</span>
+            <span class="ticket-time">${fmtTime(o.createdAt)}</span>
+          </div>
+          <div class="ticket-name">${escapeHtml(o.name)}</div>
+          <ul class="ticket-items">${itemsList}</ul>
+          <div class="ticket-meta">Jami: <b style="color:var(--crust-2)">${fmtSum(o.total||0)}</b></div>
+          <div class="ticket-meta">${escapeHtml(o.phone)} · ${metaLine}</div>
+          ${o.note ? `<div class="ticket-note">"${escapeHtml(o.note)}"</div>` : ''}
+          <div class="status-row">
+            <span class="status-badge status-${o.status}">${statusLabel(o.status)}</span>
+            ${o.status !== 'yetkazildi' ? `<button class="status-btn" onclick="advanceStatus('${o.id}','${o.status}')">${o.status==='yangi' ? 'Tayyor deb belgilash' : 'Yetkazildi deb belgilash'}</button>` : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }catch(e){
+    console.error(e);
+    container.innerHTML = '<div class="empty">Buyurtmalarni yuklab bo\'lmadi. Server ishlayotganini tekshiring.</div>';
+  }
+}
+
+async function advanceStatus(id, currentStatus){
+  try{
+    const res = await fetch('/api/orders/' + id, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: nextStatus(currentStatus) })
+    });
+    if(!res.ok) throw new Error('Yangilab bo\'lmadi');
+    loadOrders();
+  }catch(e){
+    console.error(e);
+    alert('Holatni yangilashda xatolik.');
+  }
+}
+
+function escapeHtml(s){
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+renderMenu();
+setInterval(()=>{
+  if(document.getElementById('tab-kitchen').style.display !== 'none'){ loadOrders(); }
+}, 6000);
+</script>
+
+</body>
+</html>
